@@ -7,6 +7,9 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
 
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+
 
 public class ValidaLoginService extends Service {
 
@@ -26,11 +29,14 @@ public class ValidaLoginService extends Service {
 
 		String email = intent.getExtras().getString("email");
 		String senha = intent.getExtras().getString("senha");
+		int dia = intent.getExtras().getInt("dia");
+		int mes = intent.getExtras().getInt("mes");
+		int ano = intent.getExtras().getInt("ano");
 
 		String mensagem = "";
 
 		if ((email != null && email.equalsIgnoreCase("felipeweb"))
-				&& (senha != null && senha.equalsIgnoreCase("2602"))) {
+				&& (senha != null && senha.equalsIgnoreCase("2602") && maiorDe18(dia, mes, ano))) {
 
 			mensagem = "Login válido";
 		} else {
@@ -50,5 +56,23 @@ public class ValidaLoginService extends Service {
 		nm.notify(100, n);
 
 		return 1;
+	}
+
+	private boolean maiorDe18(int dia, int mes, int ano) {
+
+		Calendar dateOfBirth = new GregorianCalendar(ano, mes, ano);
+
+		// Cria um objeto calendar com a data atual
+		Calendar today = Calendar.getInstance();
+
+		// Obtém a idade baseado no ano
+		int age = today.get(Calendar.YEAR) - dateOfBirth.get(Calendar.YEAR);
+
+		dateOfBirth.add(Calendar.YEAR, age);
+
+		if (today.before(dateOfBirth)) {
+			age--;
+		}
+		return age > 18;
 	}
 }
